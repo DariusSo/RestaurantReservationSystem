@@ -36,7 +36,52 @@ public class ReservationService {
         List<Reservation> reservationsList = new ArrayList<>();
         ResultSet rs = reservationRepository.getReservations();
         while(rs.next()){
+            reservationsList.add(createReservation(rs));
+        }
+        if(date != null){
+            listBydate(reservationsList, date);
+        }
+        return reservationsList;
+    }
+    public String updateStatusConfirmed(long id) throws SQLException {
+        List<Reservation> reservationList = getReservations(null);
+        for(Reservation r : reservationList){
+            if(r.getId() == id){
+                reservationRepository.updateStatusConfirmed(id);
+                return "Rezervacija patvirtinta";
+            }
+        }
+        return "Rezervacija tokiu id nerasta";
+    }
+    public String updateStatusCanceled(long id) throws SQLException {
+        List<Reservation> reservationList = getReservations(null);
+        for(Reservation r : reservationList){
+            if(r.getId() == id){
+                reservationRepository.updateStatusCanceled(id);
+                return "Rezervacija atsaukta";
+            }
+        }
+        return "Rezervacija tokiu id nerasta";
+    }
+    public List<Reservation> listBydate(List<Reservation> reservationsList, LocalDate date){
+        List<Reservation> listByDate = new ArrayList<>();
+        for(Reservation r : reservationsList){
+            if(r.getReservationDate().toLocalDate().isEqual(date)){
+                listByDate.add(r);
+            }
+        }
+        return listByDate;
+    }
+    public List<Reservation> getClientReservations(long id) throws SQLException {
+        List<Reservation> reservationsList = new ArrayList<>();
+        ResultSet rs = reservationRepository.getClientReservations(id);
+        while(rs.next()){
+            reservationsList.add(createReservation(rs));
+        }
+        return reservationsList;
+    }
 
+    public Reservation createReservation(ResultSet rs) throws SQLException {
             long id = rs.getLong("id");
             long clientId = rs.getLong("client_id");
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -45,31 +90,23 @@ public class ReservationService {
             String status = rs.getString("status");
 
             Reservation reservation = new Reservation(id, clientId, reservationDate, numberOfPeople, status);
-            reservationsList.add(reservation);
-        }
-        if(date != null){
-            listBydate(reservationsList, date);
+            return reservation;
+    }
+    public List<Reservation> getConfirmedReservations() throws SQLException {
+        List<Reservation> reservationsList = new ArrayList<>();
+        ResultSet rs = reservationRepository.getConfirmedReservations();
+        while(rs.next()){
+            reservationsList.add(createReservation(rs));
         }
         return reservationsList;
     }
-    public String updateStatus(String status, long id) throws SQLException {
-        List<Reservation> reservationList = getReservations(null);
-        for(Reservation r : reservationList){
-            if(r.getId() == id){
-                reservationRepository.updateStatus(status, id);
-                return "Rezervacijos statusas pakeistas";
-            }
+    public List<Reservation> getCanceledReservations() throws SQLException {
+        List<Reservation> reservationsList = new ArrayList<>();
+        ResultSet rs = reservationRepository.getCanceledReservations();
+        while(rs.next()){
+            reservationsList.add(createReservation(rs));
         }
-        return "Rezervacija tokiu id nerasta";
-    }
-    public List<Reservation> listBydate(List<Reservation> reservationList, LocalDate date){
-        List<Reservation> listByDate = new ArrayList<>();
-        for(Reservation r : reservationsList){
-            if(r.getReservationDate().toLocalDate().isEqual(date)){
-                listByDate.add(r);
-            }
-        }
-        return listByDate;
+        return reservationsList;
     }
 
 }

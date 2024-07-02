@@ -1,13 +1,11 @@
 package com.RestaurantReservationSystem.repositories;
 
 import com.RestaurantReservationSystem.models.Reservation;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 public class ReservationRepository {
     public void addReservation(Reservation reservation) throws SQLException {
@@ -24,11 +22,34 @@ public class ReservationRepository {
         return rs;
     }
 
-    public void updateStatus(String status, long id) throws SQLException {
-        PreparedStatement ps = Connect.SQLConnection("UPDATE reservations SET status = ? WHERE id = ?");
-        ps.setString(1, status);
-        ps.setLong(2, id);
+    public void updateStatusConfirmed(long id) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("UPDATE reservations SET status = 'confirmed' WHERE id = ?");
+        ps.setLong(1, id);
         ps.execute();
     }
+    public void updateStatusCanceled(long id) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("UPDATE reservations SET status = 'canceled' WHERE id = ?");
+        ps.setLong(1, id);
+        ps.execute();
+    }
+    public ResultSet getClientReservations(long id) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM reservations WHERE client_id = ?");
+        ps.setLong(1, id);
+        ResultSet rs = ps.executeQuery();
+        return rs;
+    }
+    public ResultSet getConfirmedReservations() throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM reservations WHERE status = 'confirmed'");
+        ResultSet rs = ps.executeQuery();
+        return rs;
+    }
+    public ResultSet getCanceledReservations() throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM reservations WHERE status = 'canceled'");
+        ResultSet rs = ps.executeQuery();
+        return rs;
+    }
+
+
+
 
 }

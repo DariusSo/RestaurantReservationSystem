@@ -1,17 +1,13 @@
 package com.RestaurantReservationSystem.controllers;
 
-import com.RestaurantReservationSystem.models.Client;
 import com.RestaurantReservationSystem.models.Reservation;
-import com.RestaurantReservationSystem.repositories.Connect;
-import com.RestaurantReservationSystem.repositories.ReservationRepository;
 import com.RestaurantReservationSystem.services.ReservationService;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -26,7 +22,23 @@ public class ReservationController {
         return reservationService.getReservations(date);
     }
     @PatchMapping("/confirm/{reservationId}")
-    public String updateStatus(String status, @PathVariable long reservationId) throws SQLException {
-        return reservationService.updateStatus(status, reservationId);
+    public String updateStatusConfirmed(@PathVariable long reservationId) throws SQLException {
+        return reservationService.updateStatusConfirmed(reservationId);
+    }
+    @GetMapping("/client/{clientId}")
+    public List<Reservation> getClientReservations(@PathVariable long clientId) throws SQLException {
+        return reservationService.getClientReservations(clientId);
+    }
+    @GetMapping("/confirmed")
+    public List<Reservation> getConfirmedReservations() throws SQLException {
+        return reservationService.getConfirmedReservations();
+    }
+    @GetMapping("/canceled")
+    public List<Reservation> getCanceledReservations() throws SQLException {
+        return reservationService.getCanceledReservations();
+    }
+    @DeleteMapping("/{reservationId}")
+    public String updateStatusCanceled(@PathVariable long reservationId) throws SQLException {
+        return reservationService.updateStatusCanceled(reservationId);
     }
 }
