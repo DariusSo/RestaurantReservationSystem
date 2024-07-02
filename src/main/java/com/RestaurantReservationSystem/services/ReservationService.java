@@ -39,7 +39,7 @@ public class ReservationService {
             reservationsList.add(createReservation(rs));
         }
         if(date != null){
-            listBydate(reservationsList, date);
+            return listBydate(reservationsList, date);
         }
         return reservationsList;
     }
