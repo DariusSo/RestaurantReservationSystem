@@ -20,16 +20,6 @@ public class ClientService {
         }
     }
     public List<Client> getClients() throws SQLException {
-        List<Client> clientsList = new ArrayList<>();
-        ResultSet rs = clientRepository.getClients();
-        while (rs.next()){
-            String name = rs.getString("name");
-            String email = rs.getString("email");
-            String phone = rs.getString("phone");
-
-            Client client = new Client(rs.getLong("id"), name, email, phone);
-            clientsList.add(client);
-        }
-        return clientsList;
+        return clientRepository.getClients();
     }
 }

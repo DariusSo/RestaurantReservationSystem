@@ -5,6 +5,10 @@ import com.RestaurantReservationSystem.models.Reservation;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ReservationRepository {
@@ -16,10 +20,14 @@ public class ReservationRepository {
         ps.setInt(3, reservation.getNumberOfPeople());
         ps.execute();
     }
-    public ResultSet getReservations() throws SQLException {
+    public List<Reservation> getReservations() throws SQLException {
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM reservations");
         ResultSet rs = ps.executeQuery();
-        return rs;
+        List<Reservation> reservationsList = new ArrayList<>();
+        while(rs.next()){
+            reservationsList.add(createReservation(rs));
+        }
+        return reservationsList;
     }
 
     public void updateStatusConfirmed(long id) throws SQLException {
@@ -32,24 +40,43 @@ public class ReservationRepository {
         ps.setLong(1, id);
         ps.execute();
     }
-    public ResultSet getClientReservations(long id) throws SQLException {
+    public List<Reservation> getClientReservations(long id) throws SQLException {
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM reservations WHERE client_id = ?");
         ps.setLong(1, id);
         ResultSet rs = ps.executeQuery();
-        return rs;
+        List<Reservation> reservationsList = new ArrayList<>();
+        while(rs.next()){
+            reservationsList.add(createReservation(rs));
+        }
+        return reservationsList;
     }
-    public ResultSet getConfirmedReservations() throws SQLException {
+    public List<Reservation> getConfirmedReservations() throws SQLException {
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM reservations WHERE status = 'confirmed'");
         ResultSet rs = ps.executeQuery();
-        return rs;
+        List<Reservation> reservationsList = new ArrayList<>();
+        while(rs.next()){
+            reservationsList.add(createReservation(rs));
+        }
+        return reservationsList;
     }
-    public ResultSet getCanceledReservations() throws SQLException {
+    public List<Reservation> getCanceledReservations() throws SQLException {
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM reservations WHERE status = 'canceled'");
         ResultSet rs = ps.executeQuery();
-        return rs;
+        List<Reservation> reservationsList = new ArrayList<>();
+        while(rs.next()){
+            reservationsList.add(createReservation(rs));
+        }
+        return reservationsList;
     }
+    public Reservation createReservation(ResultSet rs) throws SQLException {
+        long id = rs.getLong("id");
+        long clientId = rs.getLong("client_id");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime reservationDate = LocalDateTime.parse(rs.getString("reservation_date"), df);
+        int numberOfPeople = rs.getInt("number_of_people");
+        String status = rs.getString("status");
 
-
-
-
+        Reservation reservation = new Reservation(id, clientId, reservationDate, numberOfPeople, status);
+        return reservation;
+    }
 }

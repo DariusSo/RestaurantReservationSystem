@@ -33,11 +33,7 @@ public class ReservationService {
         return "Bad client id, there is no such client";
     }
     public List<Reservation> getReservations(LocalDate date) throws SQLException {
-        List<Reservation> reservationsList = new ArrayList<>();
-        ResultSet rs = reservationRepository.getReservations();
-        while(rs.next()){
-            reservationsList.add(createReservation(rs));
-        }
+        List<Reservation> reservationsList = reservationRepository.getReservations();
         if(date != null){
             return listBydate(reservationsList, date);
         }
@@ -73,40 +69,14 @@ public class ReservationService {
         return listByDate;
     }
     public List<Reservation> getClientReservations(long id) throws SQLException {
-        List<Reservation> reservationsList = new ArrayList<>();
-        ResultSet rs = reservationRepository.getClientReservations(id);
-        while(rs.next()){
-            reservationsList.add(createReservation(rs));
-        }
-        return reservationsList;
+        return reservationRepository.getClientReservations(id);
     }
 
-    public Reservation createReservation(ResultSet rs) throws SQLException {
-            long id = rs.getLong("id");
-            long clientId = rs.getLong("client_id");
-            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime  reservationDate = LocalDateTime.parse(rs.getString("reservation_date"), df);
-            int numberOfPeople = rs.getInt("number_of_people");
-            String status = rs.getString("status");
-
-            Reservation reservation = new Reservation(id, clientId, reservationDate, numberOfPeople, status);
-            return reservation;
-    }
     public List<Reservation> getConfirmedReservations() throws SQLException {
-        List<Reservation> reservationsList = new ArrayList<>();
-        ResultSet rs = reservationRepository.getConfirmedReservations();
-        while(rs.next()){
-            reservationsList.add(createReservation(rs));
-        }
-        return reservationsList;
+        return reservationRepository.getConfirmedReservations();
     }
     public List<Reservation> getCanceledReservations() throws SQLException {
-        List<Reservation> reservationsList = new ArrayList<>();
-        ResultSet rs = reservationRepository.getCanceledReservations();
-        while(rs.next()){
-            reservationsList.add(createReservation(rs));
-        }
-        return reservationsList;
+        return reservationRepository.getCanceledReservations();
     }
 
 }
